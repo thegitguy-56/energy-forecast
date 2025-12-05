@@ -1,0 +1,7 @@
+[theme]
+base="light"
+primaryColor="#00C853"          # bright green (energy / renewable)
+backgroundColor="#F2F7F4"       # very light greenish background
+secondaryBackgroundColor="#FFFFFF"
+textColor="#12212B"             # dark bluish text
+font="sans serif"

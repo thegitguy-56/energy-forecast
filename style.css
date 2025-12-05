@@ -1,0 +1,44 @@
+/* Global background tweaks */
+.main {
+    background-color: #F5F7FB;
+}
+
+/* Card-like blocks */
+.block-card {
+    padding: 1.2rem 1.5rem;
+    border-radius: 0.8rem;
+    background-color: #FFFFFF;
+    box-shadow: 0 4px 10px rgba(15, 23, 42, 0.08);
+    margin: 0.5rem 0 1.2rem 0; /* smaller top margin */
+}
+
+
+/* Headings */
+h1, h2, h3 {
+    font-weight: 600;
+    color: #111827;
+}
+
+/* Sidebar text */
+.css-1d391kg, .css-1d391kg * {
+    font-size: 0.92rem;
+}
+
+/* Buttons */
+.stButton>button {
+    border-radius: 999px;
+    background-color: #00C853; /* energy green */
+    color: white;
+    border: none;
+    padding: 0.4rem 1rem;
+}
+.stButton>button:hover {
+    background-color: #009624; /* darker green on hover */
+}
+
+
+/* Dataframe container */
+.stDataFrame {
+    border-radius: 0.6rem;
+    overflow: hidden;
+}
