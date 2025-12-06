@@ -198,11 +198,18 @@ if run_btn and uploaded_file is not None:
         )
 
         with tab_overview:
-            st.markdown("### Cleaned 12-Month Dataset")
-            st.dataframe(year_df.head())
-            st.markdown("---")
-            st.markdown("### Summary Statistics")
-            st.write(year_df[target_col].describe())
+            st.markdown("### Overview")
+
+            col_left, col_right = st.columns(2)
+
+            with col_left:
+                st.markdown("#### Cleaned 12‑Month Dataset")
+                st.dataframe(year_df.head())
+
+            with col_right:
+                st.markdown("#### Summary Statistics")
+                st.write(year_df[target_col].describe())
+
 
         with tab_ts:
             st.markdown("### Daily Energy Consumption")
