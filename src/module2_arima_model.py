@@ -5,6 +5,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 from sklearn.metrics import mean_absolute_error, mean_squared_error
+from sklearn.ensemble import RandomForestRegressor
 from math import sqrt
 
 from pmdarima import auto_arima
@@ -109,6 +110,21 @@ def evaluate_forecast(y_true, y_pred):
 
     return mae, rmse, mape
 
+def make_lag_features(series: pd.Series, n_lags: int = 7):
+    """
+    Turn a univariate time series into a supervised dataset for Random Forest:
+    X = [y(t-1), ..., y(t-n_lags)], y = y(t).
+    """
+    df = pd.DataFrame({"y": series})
+    for lag in range(1, n_lags + 1):
+        df[f"lag_{lag}"] = df["y"].shift(lag)
+
+    df = df.dropna()
+
+    X = df[[f"lag_{lag}" for lag in range(1, n_lags + 1)]]
+    y = df["y"]
+    return X, y
+
 
 # -----------------------------
 # Step 5: Plot actual vs predicted
@@ -199,7 +215,42 @@ def run_module2():
     order = auto_model.order
     _ = refit_statsmodels_arima(y_train, order=order)
 
-    print("\nModule 2 ARIMA modeling completed successfully.")
+
+    # -----------------------------
+    # Random Forest model (comparison)
+    # -----------------------------
+    print("\nTraining Random Forest Regressor for comparison...")
+
+    # 1. Make lag features on train
+    X_train_rf, y_train_rf = make_lag_features(y_train, n_lags=7)
+
+    rf = RandomForestRegressor(
+        n_estimators=200,
+        random_state=42
+    )
+    rf.fit(X_train_rf, y_train_rf)
+
+    # 2. Build lag features on combined (train + test) to get test features
+    combined = pd.concat([y_train, y_test])
+    X_all_rf, y_all_rf = make_lag_features(combined, n_lags=7)
+
+    # Keep only rows where index is in test period
+    X_test_rf = X_all_rf.loc[y_test.index]
+
+    # 3. Predict
+    rf_pred = rf.predict(X_test_rf)
+    rf_pred_series = pd.Series(rf_pred, index=y_test.index)
+
+    # 4. Evaluate RF
+    mae_rf, rmse_rf, mape_rf = evaluate_forecast(y_test, rf_pred_series)
+
+    print("\nRandom Forest Metrics:")
+    print(f"MAE  : {mae_rf:.3f}")
+    print(f"RMSE : {rmse_rf:.3f}")
+    print(f"MAPE : {mape_rf:.2f}%")
+
+    print("\nModule 2 ARIMA + Random Forest modeling completed successfully.")
+
 
 
 if __name__ == "__main__":
